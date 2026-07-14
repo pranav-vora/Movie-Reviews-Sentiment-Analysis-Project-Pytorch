@@ -1,0 +1,58 @@
+import torch
+import torch.nn as nn
+import matplotlib.pyplot as plt
+
+from utils import ALL_LETTERS, N_LETTERS
+from utils import load_data, letter_to_tensor, line_to_tensor, random_training_example
+
+class RNN(nn.Module):
+    def __init__(self):
+        super(RNN, self).__init__()
+
+        self.hidden_size = 128
+        self.input_size = N_LETTERS
+        self.output_size = 1
+
+
+        self.input2hidden = nn.Linear(self.input_size + self.hidden_size, self.hidden_size)
+        self.input2output = nn.Linear(self.input_size + self.hidden_size, self.output_size)
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    def forward(self, input_tensor, hidden_tensor):
+        combined = torch.cat((input_tensor, hidden_tensor), 1)
+
+        hidden = self.input2hidden(combined)
+        output = self.input2output(combined)
+        output = self.softmax(output)
+
+        return output, hidden
+    
+    def init_hidden(self):
+        return torch.zeros(1, self.hidden_size)
+    
+category_lines, all_categories = load_data()
+
+rnn = RNN()
+
+# one step
+input_tensor = letter_to_tensor('A')
+hidden_tensor = rnn.init_hidden()
+
+output, next_hidden = rnn(input_tensor, hidden_tensor)
+print(output.size())
+print(next_hidden.size())
+
+
+# whole sequence
+category, line, category_tensor, line_tensor = random_training_example(
+    category_lines, all_categories
+)
+
+hidden = rnn.init_hidden()
+
+for i in range(line_tensor.size(0)):
+    output, hidden = rnn(line_tensor[i], hidden)
+
+print(output)
+print(output.size())
+print(next_hidden.size())
