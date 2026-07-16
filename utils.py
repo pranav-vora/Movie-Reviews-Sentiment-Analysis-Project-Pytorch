@@ -9,6 +9,8 @@ import random
 
 pd.set_option('display.max_colwidth', None)
 df = pd.read_csv("IMDB Dataset.csv")
+train_df = df.sample(frac=0.8, random_state=42)
+test_df = df.drop(train_df.index)
 
 # alphabet small + capital letters + " .,;'"
 ALL_LETTERS = string.ascii_letters + " .,;'"
@@ -24,7 +26,7 @@ def unicode_to_ascii(s):
 
 def load_data():
     # Group reviews into a list for each sentiment
-    category_lines = df.groupby('sentiment')['review'].apply(list).to_dict()
+    category_lines = train_df.groupby('sentiment')['review'].apply(list).to_dict()
 
     all_categories = ['positive', 'negative']
         
