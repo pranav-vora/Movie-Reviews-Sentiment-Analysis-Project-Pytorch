@@ -7,6 +7,9 @@ import string
 import torch
 import random
 
+import nltk
+nltk.download('punkt_tab')
+from nltk.stem.porter import PorterStemmer
 pd.set_option('display.max_colwidth', None)
 df = pd.read_csv("IMDB Dataset.csv")
 train_df = df.sample(frac=0.8, random_state=42)
@@ -77,6 +80,15 @@ def random_training_example(category_lines, all_categories):
     line_tensor = line_to_tensor(line)
     return category, line, category_tensor, line_tensor
 
+stemmer = PorterStemmer()
+def tokenize(paragraph):
+    return nltk.word_tokenize(paragraph)
+def stem(word):
+    return stemmer.stem(word.lower())
+
+def bag_of_words(tokenized_sentence, all_words):
+    pass
+
 
 
 if __name__ == '__main__':
@@ -84,7 +96,19 @@ if __name__ == '__main__':
     print(unicode_to_ascii('Ślusàrski'))
     
     category_lines, all_categories = load_data()
-    print(category_lines['positive'][:5])
+    example = str(category_lines['positive'][:1])
+    print(example)
+    example_tokenized = tokenize(example)
+    print(example_tokenized)
+    stemmed_example = [stem(w) for w in example_tokenized]
+    print(stemmed_example)
     
-    print(letter_to_tensor('A')) # [1, 57]
-    print(line_to_tensor('Jones').size()) # [5, 1, 57]
+    # print(letter_to_tensor('A')) # [1, 57]
+    # print(line_to_tensor('Jones').size()) # [5, 1, 57]
+    
+    
+    # Tokenization
+    # create vocabulary
+    # vectorization
+
+
